@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nominasi Siswa Ter...</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Nominasi Siswa Ter... Angkatan 2025'17</h1>
+    <p>Pilih dan vote untuk nominasi favoritmu!</p>
+
+    <!-- Form untuk upload nominasi -->
+    <section>
+        <h2>Tambah Nominasi</h2>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="text" name="name" placeholder="Nama Siswa" required>
+            <input type="text" name="category" placeholder="Kategori (contoh: Ter Kocak)" required>
+            <input type="file" name="photo" accept="image/*" required>
+            <button type="submit">Tambahkan</button>
+        </form>
+    </section>
+
+    <!-- Daftar nominasi -->
+    <section id="nominees">
+        <h2>Daftar Nominasi</h2>
+        <div id="nomineeList">
+            <!-- Nominasi akan ditampilkan di sini -->
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+}
+
+h1 {
+    color: #4CAF50;
+}
+
+form {
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+input, button {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#nomineeList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 20px;
+}
+
+.nominee {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.nominee img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+const uploadForm = document.getElementById('uploadForm');
+const nomineeList = document.getElementById('nomineeList');
+
+// Daftar nominasi (dummy data untuk testing)
+let nominees = [];
+
+// Fungsi untuk render nominasi
+function renderNominees() {
+    nomineeList.innerHTML = ''; // Hapus konten lama
+    nominees.forEach((nominee, index) => {
+        const nomineeCard = document.createElement('div');
+        nomineeCard.className = 'nominee';
+        nomineeCard.innerHTML = `
+            <img src="${nominee.photo}" alt="${nominee.name}">
+            <h3>${nominee.name}</h3>
+            <p>Kategori: ${nominee.category}</p>
+            <button onclick="vote(${index})">Vote (${nominee.votes})</button>
+        `;
+        nomineeList.appendChild(nomineeCard);
+    });
+}
+
+// Fungsi untuk handle upload
+uploadForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(uploadForm);
+    const newNominee = {
+        name: formData.get('name'),
+        category: formData.get('category'),
+        photo: URL.createObjectURL(formData.get('photo')),
+        votes: 0
+    };
+    nominees.push(newNominee);
+    renderNominees();
+    uploadForm.reset(); // Reset form
+});
+
+// Fungsi untuk voting
+function vote(index) {
+    nominees[index].votes += 1;
+    renderNominees();
+}
+
+// Render awal
+renderNominees();
